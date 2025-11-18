@@ -57,6 +57,8 @@ pub async fn run_main(
             let mut lines = reader.lines();
 
             while let Some(line) = lines.next_line().await.unwrap_or_default() {
+                // 这是基于 JSON-RPC 消息确实是以单行（newline-delimited JSON）发送的假设。
+                // 如果发送方有 JSON 换行或 pretty-print，多行 JSON 将无法解析。
                 match serde_json::from_str::<JSONRPCMessage>(&line) {
                     Ok(msg) => {
                         if incoming_tx.send(msg).await.is_err() {

@@ -144,7 +144,7 @@ pub(crate) async fn assess_command(
             match event {
                 Ok(ResponseEvent::OutputItemDone(item)) => {
                     if let Some(text) = response_item_text(&item) {
-                        last_json = Some(text);
+                        last_json = Some(text); // 这里的ItemDone会聚合之前的delta内容
                     }
                 }
                 Ok(ResponseEvent::RateLimits(_)) => {}
@@ -160,6 +160,9 @@ pub(crate) async fn assess_command(
     parent_otel.sandbox_assessment_latency(call_id, duration);
 
     match assessment_result {
+        // 未从任意位置提取 JSON —— 模型常返回带 Markdown/code fence 的文本
+        // 问题描述：直接把文本传给 serde_json::from_str 并要求严格 JSON。现实模型输出经常包含 Markdown、说明文字或者 code-fence（json ... ）。
+        // 直接 parse 很容易失败。
         Ok(Ok(Some(raw))) => match serde_json::from_str::<SandboxCommandAssessment>(raw.trim()) {
             Ok(assessment) => {
                 parent_otel.sandbox_assessment(

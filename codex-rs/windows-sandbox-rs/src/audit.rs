@@ -178,12 +178,15 @@ unsafe fn path_has_world_write_allow(path: &Path) -> Result<bool> {
     Ok(has)
 }
 
+// TODO：review the impl
 pub fn audit_everyone_writable(
     cwd: &Path,
     env: &std::collections::HashMap<String, String>,
     logs_base_dir: Option<&Path>,
 ) -> Result<Vec<PathBuf>> {
     let start = Instant::now();
+    // `flagged` collects paths discovered as writable by Everyone (non-inherit ACEs).
+    // These are treated as security findings and returned to the caller.
     let mut flagged: Vec<PathBuf> = Vec::new();
     let mut seen: HashSet<String> = HashSet::new();
     let mut checked = 0usize;
@@ -271,7 +274,6 @@ pub fn audit_everyone_writable(
         for p in &flagged {
             list.push_str(&format!("\n - {}", p.display()));
         }
-
         return Ok(flagged);
     }
     // Log success once if nothing flagged

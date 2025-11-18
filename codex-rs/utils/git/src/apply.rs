@@ -54,6 +54,7 @@ pub fn apply_git_patch(req: &ApplyGitRequest) -> io::Result<ApplyGitResult> {
     // Build git args
     let mut args: Vec<String> = vec!["apply".into(), "--3way".into()];
     if req.revert {
+        // -R (--reverse)：按相反方向应用补丁，也就是把补丁中的“新增”当成“删除”、把“删除”当成“新增”，常用于撤销补丁
         args.push("-R".into());
     }
 
