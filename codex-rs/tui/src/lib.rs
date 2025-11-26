@@ -98,6 +98,7 @@ use std::io::Write as _;
 
 // (tests access modules directly within the crate)
 
+/// The interactive entrypoint
 pub async fn run_main(
     mut cli: Cli,
     codex_linux_sandbox_exe: Option<PathBuf>,

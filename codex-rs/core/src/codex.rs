@@ -243,6 +243,7 @@ impl Codex {
         Ok(())
     }
 
+    // Receive the next event emitted by the Codex session.
     pub async fn next_event(&self) -> CodexResult<Event> {
         let event = self
             .rx_event
@@ -258,7 +259,7 @@ impl Codex {
 /// A session has at most 1 running task at a time, and can be interrupted by user input.
 pub(crate) struct Session {
     conversation_id: ConversationId,
-    tx_event: Sender<Event>,
+    tx_event: Sender<Event>, // monitor by the Codex struct
     state: Mutex<SessionState>,
     pub(crate) active_turn: Mutex<Option<ActiveTurn>>,
     pub(crate) services: SessionServices,
@@ -766,6 +767,8 @@ impl Session {
         )))
     }
 
+    /// ## Session Event Emission
+    /// 
     /// Persist the event to rollout and send it to clients.
     pub(crate) async fn send_event(&self, turn_context: &TurnContext, msg: EventMsg) {
         let legacy_source = msg.clone();

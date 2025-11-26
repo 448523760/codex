@@ -500,7 +500,7 @@ impl App {
                 self.chat_widget.on_commit_tick();
             }
             AppEvent::CodexEvent(event) => {
-                self.chat_widget.handle_codex_event(event);
+                self.chat_widget.handle_codex_event(event); // Handle the event from Codex Session
             }
             AppEvent::ConversationHistory(ev) => {
                 self.on_conversation_history_for_backtrack(tui, ev).await?;

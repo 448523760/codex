@@ -61,8 +61,10 @@ pub(crate) fn spawn_agent(
                     tracing::error!("failed to submit op: {e}");
                 }
             }
+            let _ = conversation_clone.submit(Op::Shutdown).await;
         });
 
+        // Monitor event from Codex Session (sess.send_event)
         while let Ok(event) = conversation.next_event().await {
             app_event_tx_clone.send(AppEvent::CodexEvent(event));
         }
@@ -98,6 +100,7 @@ pub(crate) fn spawn_agent_from_existing(
                     tracing::error!("failed to submit op: {e}");
                 }
             }
+            let _ = conversation_clone.submit(Op::Shutdown).await;
         });
 
         while let Ok(event) = conversation.next_event().await {
